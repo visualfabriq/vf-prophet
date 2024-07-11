@@ -32,7 +32,7 @@ jobs:
 
       - run:
           name: Install dependencies
-          command: ~/venv/bin/pip pip install -U --editable ".[dev,parallel]"
+          command: ~/venv/bin/pip install -U --editable ".[dev,parallel]"
 
       # Save the cached dependencies
       - save_cache:
