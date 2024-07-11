@@ -1,3 +1,41 @@
+Metadata-Version: 2.1
+Name: prophet
+Version: 1.1.5
+Summary: Automatic Forecasting Procedure
+Author-email: "Sean J. Taylor" <sjtz@pm.me>, Ben Letham <bletham@fb.com>
+Maintainer-email: Cuong Duong <cuong.duong242@gmail.com>
+License: MIT
+Project-URL: Homepage, https://facebook.github.io/prophet/
+Project-URL: Documentation, https://facebook.github.io/prophet/
+Project-URL: Repository, https://github.com/facebook/prophet
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: cmdstanpy>=1.0.4
+Requires-Dist: numpy>=1.15.4
+Requires-Dist: matplotlib>=2.0.0
+Requires-Dist: pandas>=1.0.4
+Requires-Dist: holidays>=0.25
+Requires-Dist: tqdm>=4.36.1
+Requires-Dist: importlib_resources
+Provides-Extra: dev
+Requires-Dist: setuptools>=64; extra == "dev"
+Requires-Dist: wheel; extra == "dev"
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: jupyterlab; extra == "dev"
+Requires-Dist: nbconvert; extra == "dev"
+Requires-Dist: plotly; extra == "dev"
+Provides-Extra: parallel
+Requires-Dist: dask[dataframe]; extra == "parallel"
+Requires-Dist: distributed; extra == "parallel"
+
 # Prophet: Automatic Forecasting Procedure
 
 Prophet is a procedure for forecasting time series data based on an additive model where non-linear trends are fit with yearly, weekly, and daily seasonality, plus holiday effects. It works best with time series that have strong seasonal effects and several seasons of historical data. Prophet is robust to missing data and shifts in the trend, and typically handles outliers well.
