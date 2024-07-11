@@ -1,0 +1,116 @@
+version: 2.1
+orbs:
+  codeartifact: visualfabriq/codeartifact@1.2.0
+  coverage-reporter: codacy/coverage-reporter@13.6.0
+
+jobs:
+  test:
+    executor: codeartifact/default
+    parameters:
+      with-coverage:
+        description: Coverage reporting flag
+        type: boolean
+        default: false
+      runtime:
+        description: Python runtime
+        type: string
+    docker:
+      - image: cimg/python:<<parameters.runtime>>
+    steps:
+      - checkout
+      - run:
+          name: Activate virtualenv
+          command: virtualenv ~/venv
+
+      - restore_cache:
+          keys:
+            - vf-prophet-<< parameters.runtime >>-v1-dependencies-{{ checksum "setup.py" }}
+            - vf-prophet-<< parameters.runtime >>-v1-dependencies
+
+      - codeartifact/init:
+          tool: pip
+
+      - run:
+          name: Install dependencies
+          command: ~/venv/bin/pip install .[test]
+
+      # Save the cached dependencies
+      - save_cache:
+          key: << parameters.runtime >>-v1-dependencies-{{ checksum "setup.py" }}
+          paths:
+            - ~/venv
+
+      - when:
+          condition:
+            not: << parameters.with-coverage >>
+          steps:
+            - run:
+                name: Run tests
+                command: ~/venv/bin/python -m pytest tests
+      - when:
+          condition: << parameters.with-coverage >>
+          steps:
+            - run:
+                name: Run tests with coverage reporting
+                command: |
+                  ~/venv/bin/python -m coverage run -m \
+                    pytest tests --junitxml=test-results/junit.xml
+                  ~/venv/bin/python -m coverage xml -o cobertura.xml
+            - store_test_results:
+                path: test-results
+            - store_artifacts:
+                path: test-results
+            - coverage-reporter/send_report
+
+  build-and-push:
+    executor: codeartifact/default
+    parameters:
+      is-pre-release:
+        description: if true the version tag will contain the branch
+        type: boolean
+        default: false
+    steps:
+      - checkout
+      - codeartifact/init:
+          tool: pip
+      - when:
+          condition: << parameters.is-pre-release >>
+          steps:
+            - codeartifact/pre_release_version:
+                package: vf-prophet
+      - run:
+          name: Build
+          command: |
+            cd python
+            python -m pip install -U --editable ".[dev,parallel]"
+      - codeartifact/push:
+          tool: twine
+
+
+workflows:
+  version: 2.1
+  main:
+    jobs:
+      - test:
+          name: py311
+          context: codeartifact-dev
+          runtime: "3.11"
+
+      - build-and-push:
+          context: codeartifact-dev
+          requires:
+            - py311
+          filters:
+            branches:
+              only:
+                - v1.1.5
+
+      - build-and-push:
+          context: codeartifact-dev
+          requires:
+            - py311
+          is-pre-release: true
+          filters:
+            branches:
+              only:
+                - uat
