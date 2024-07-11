@@ -5,7 +5,10 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 from prophet.forecaster import Prophet
-import os
 
-pre_release_version = os.getenv('PRE_RELEASE_VERSION', '')
-__version__ = pre_release_version if pre_release_version else '1.1.5'
+from pathlib import Path
+about = {}
+here = Path(__file__).parent.resolve()
+with open(here / "__version__.py", "r") as f:
+    exec(f.read(), about)
+__version__ = about["__version__"]
