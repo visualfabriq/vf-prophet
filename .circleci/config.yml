@@ -82,6 +82,7 @@ jobs:
           name: Build
           command: |
             python -m pip install -U build
+            python -m build
       - codeartifact/push:
           tool: twine
 
