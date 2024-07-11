@@ -32,7 +32,7 @@ jobs:
 
       - run:
           name: Install dependencies
-          command: ~/venv/bin/pip install .[test]
+          command: ~/venv/bin/pip pip install -U --editable ".[dev,parallel]"
 
       # Save the cached dependencies
       - save_cache:
@@ -81,7 +81,7 @@ jobs:
       - run:
           name: Build
           command: |
-            python -m pip install -U --editable ".[dev,parallel]"
+            python -m pip install -U
       - codeartifact/push:
           tool: twine
 
